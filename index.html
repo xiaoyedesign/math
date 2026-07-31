@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>陈欣妍学数学 - 儿童加减法练习</title>
+<style>
+  /* ========== CSS Variables ========== */
+  :root {
+    /* Colors - Warm, child-friendly palette */
+    --bg-primary: #FDF6F3;
+    --bg-secondary: #FFF8F4;
+    --bg-card: #FFFFFF;
+    --bg-gray: #F5F3F0;
+    
+    --warm-orange: #FF9A4E;
+    --warm-orange-light: #FFB37A;
+    --warm-orange-dark: #F57C20;
+    --warm-pink: #FF8A9E;
+    --warm-yellow: #FFD93D;
+    --mint-green: #5FCB92;
+    --sky-blue: #5BADE8;
+    --soft-purple: #A78BFA;
+    
+    --text-primary: #3D3530;
+    --text-secondary: #8C8279;
+    --text-light: #BCB4AB;
+    --text-inverse: #FFFFFF;
+    
+    --correct: #5FCB92;
+    --wrong: #FF6B6B;
+    --highlight: #FF9A4E;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #FF9A4E 0%, #FFB37A 100%);
+    --gradient-secondary: linear-gradient(135deg, #FF8A9E 0%, #FFB37A 100%);
+    --gradient-success: linear-gradient(135deg, #5FCB92 0%, #8EDCB0 100%);
+    --gradient-sky: linear-gradient(135deg, #5BADE8 0%, #87C5F0 100%);
+    --gradient-warm-bg: linear-gradient(180deg, #FDF6F3 0%, #FFF8F4 100%);
+    --gradient-tab: linear-gradient(135deg, #FFE5D4 0%, #FFD4BE 100%);
+    
+    /* Radius */
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 20px;
+    --radius-xl: 24px;
+    --radius-2xl: 28px;
+    --radius-full: 999px;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(255, 154, 78, 0.08);
+    --shadow-md: 0 4px 16px rgba(255, 154, 78, 0.1);
+    --shadow-lg: 0 8px 32px rgba(255, 154, 78, 0.12);
+    --shadow-card: 0 4px 24px rgba(255, 154, 78, 0.08);
+    --shadow-button: 0 6px 20px rgba(255, 154, 78, 0.3);
+    
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+  }
+
+  /* ========== Base ========== */
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    width: 100%; height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background: var(--bg-primary);
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    color: var(--text-primary);
+  }
+  #app {
+    width: 100%; height: 100%;
+    max-width: 1366px;
+    margin: 0 auto;
+    position: relative;
+    background: var(--gradient-warm-bg);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ========== Status Bar ========== */
+  .status-bar {
+    height: 44px;
+    background: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+  .status-bar .icons { display: flex; gap: 10px; align-items: center; }
+  .status-bar .battery {
+    width: 28px; height: 14px;
+    border: 1.5px solid var(--text-primary);
+    border-radius: 3px;
+    position: relative;
+  }
+  .status-bar .battery::after {
+    content: '';
+    position: absolute;
+    right: -4px; top: 3px;
+    width: 3px; height: 6px;
+    background: var(--text-primary);
+    border-radius: 0 1px 1px 0;
+  }
+  .status-bar .battery::before {
+    content: '';
+    position: absolute;
+    left: 1px; top: 1px;
+    width: 20px; height: 10px;
+    background: var(--text-primary);
+    border-radius: 1px;
+  }
+
+  /* ========== Page Container ========== */
+  .page-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+  }
+  .page {
+    display: none;
+    padding: 20px 20px 40px;
+    min-height: 100%;
+  }
+  .page.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ========== Bottom Tab Bar ========== */
+  .tab-bar {
+    height: 72px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: none;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 8px 16px 12px;
+    box-shadow: 0 -2px 16px rgba(255, 154, 78, 0.06);
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 6px 8px;
+    transition: all 0.25s ease;
+    border-radius: var(--radius-lg);
+  }
+  .tab-icon-wrap {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    transition: all 0.25s ease;
+    background: transparent;
+  }
+  .tab-item.active .tab-icon-wrap {
+    background: var(--gradient-primary);
+    box-shadow: var(--shadow-button);
+    transform: scale(1.05);
+  }
+  .tab-item.active .tab-icon { filter: brightness(0) invert(1); }
+  .tab-icon {
+    font-size: 24px;
+    transition: filter 0.25s ease, transform 0.25s ease;
+    color: var(--text-secondary);
+  }
+  .tab-label {
+    font-size: 11px;
+    color: var(--text-light);
+    transition: all 0.25s ease;
+    font-weight: 500;
+  }
+  .tab-item.active .tab-label {
+    color: var(--warm-orange);
+    font-weight: 600;
+  }
+
+  /* ========== Common Components ========== */
+  .back-btn {
+    width: 44px; height: 44px;
+    background: var(--bg-card);
+    border: none;
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+  }
+  .back-btn:active { transform: scale(0.95); }
+
+  .page-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* ========== Home Page ========== */
+  .home-header { text-align: center; padding: 16px 0 24px; }
+  .home-title {
+    font-size: 34px;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+  }
+  .home-subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+  }
+
+  .stats-row { display: flex; gap: 12px; margin-bottom: 24px; }
+  .stat-card {
+    flex: 1;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 18px 12px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+  }
+  .stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--warm-orange);
+    line-height: 1.2;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+  .stat-card.correct .stat-value { color: var(--mint-green); }
+  .stat-card.mistake .stat-value { color: var(--wrong); }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+  }
+
+  .category-cards { display: flex; gap: 16px; margin-bottom: 24px; }
+  .category-card {
+    flex: 1;
+    border-radius: var(--radius-xl);
+    padding: 24px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .category-card:active { transform: scale(0.97); }
+  .category-card.ten { background: linear-gradient(135deg, #FFE8D6 0%, #FFD4BE 100%); }
+  .category-card.twenty { background: linear-gradient(135deg, #D4EDDA 0%, #BAE5C8 100%); }
+  .category-card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+  }
+  .category-icon {
+    font-size: 44px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+  .category-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    position: relative;
+    z-index: 1;
+  }
+  .category-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    position: relative;
+    z-index: 1;
+  }
+  .category-arrow {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    font-size: 24px;
+    color: rgba(0,0,0,0.15);
+    z-index: 1;
+  }
+
+  .home-tips {
+    background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .tips-icon {
+    font-size: 36px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+  }
+  .tips-text { flex: 1; }
+  .tips-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .tips-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* ========== Settings Page ========== */
+  .settings-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 0 20px;
+    gap: 12px;
+  }
+  .settings-content {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: 24px 20px;
+    box-shadow: var(--shadow-card);
+  }
+  .setting-group { margin-bottom: 24px; }
+  .setting-group:last-child { margin-bottom: 0; }
+  .setting-group-title {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    font-weight: 600;
+    padding-left: 4px;
+  }
+  .option-list { display: flex; gap: 10px; flex-wrap: wrap; }
+  .option-item {
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--bg-gray);
+    font-size: 16px;
+    cursor: pointer;
+    background: var(--bg-secondary);
+    transition: all 0.2s ease;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .option-item.active {
+    border-color: var(--warm-orange);
+    background: #FFF5EB;
+    color: var(--warm-orange);
+    font-weight: 600;
+  }
+  .option-item:active { transform: scale(0.95); }
+
+  .start-btn {
+    width: 100%;
+    padding: 22px;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-xl);
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 16px;
+    box-shadow: var(--shadow-button);
+    transition: all 0.2s ease;
+  }
+  .start-btn:active { transform: scale(0.98); }
+
+  /* ========== Quiz Page ========== */
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0 16px;
+  }
+  .quiz-progress {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--warm-orange);
+    background: #FFF5EB;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+  }
+  .quiz-timer {
+    font-size: 14px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--bg-gray);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  .question-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-2xl);
+    padding: 40px 32px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: -50px; left: -50px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFE8D6 0%, transparent 70%);
+  }
+  .question-text {
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: 4px;
+    position: relative;
+    z-index: 1;
+  }
+  .question-answer-input {
+    width: 180px;
+    height: 88px;
+    border: 3px dashed var(--warm-orange);
+    border-radius: var(--radius-lg);
+    font-size: 44px;
+    font-weight: 700;
+    color: var(--warm-orange);
+    text-align: center;
+    margin: 16px auto 0;
+    background: #FFFBF7;
+    outline: none;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+  .question-answer-input:focus {
+    border-style: solid;
+    background: #FFF;
+    box-shadow: 0 0 0 6px rgba(255, 154, 78, 0.1);
+  }
+
+  .quiz-nav { display: flex; gap: 14px; }
+  .nav-btn {
+    flex: 1;
+    padding: 18px;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .nav-btn.prev {
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-btn.next {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-button);
+  }
+  .nav-btn.submit {
+    background: var(--gradient-success);
+    color: white;
+    box-shadow: 0 6px 20px rgba(95, 203, 146, 0.3);
+  }
+  .nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .nav-btn:not(:disabled):active { transform: scale(0.97); }
+
+  /* ========== Result Page ========== */
+  .result-container { padding: 16px 0; }
+  .result-header { text-align: center; padding: 24px 0; }
+  .result-emoji { font-size: 72px; margin-bottom: 12px; }
+  .result-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+  .result-subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+  }
+
+  .result-stats { display: flex; gap: 12px; margin-bottom: 24px; }
+  .result-stat {
+    flex: 1;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 20px 12px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+  }
+  .result-stat-num { font-size: 36px; font-weight: 800; }
+  .result-stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+  .result-stat.correct .result-stat-num { color: var(--mint-green); }
+  .result-stat.wrong .result-stat-num { color: var(--wrong); }
+  .result-stat.rate .result-stat-num { color: var(--warm-orange); }
+
+  .wrong-list-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+  .wrong-list {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 8px;
+    max-height: 380px;
+    overflow-y: auto;
+    box-shadow: var(--shadow-card);
+  }
+  .wrong-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--bg-gray);
+    gap: 12px;
+  }
+  .wrong-item:last-child { border-bottom: none; }
+  .wrong-question {
+    flex: 1;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .wrong-answer {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--mint-green);
+    background: #E8F7EF;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+  }
+  .wrong-your-answer {
+    font-size: 14px;
+    color: var(--text-light);
+  }
+  .result-actions { display: flex; gap: 14px; margin-top: 24px; }
+
+  /* ========== Mistake Page ========== */
+  .mistake-tabs { display: flex; gap: 10px; margin-bottom: 16px; }
+  .mistake-tab {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    text-align: center;
+    font-size: 15px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    font-weight: 500;
+  }
+  .mistake-tab.active {
+    background: #FFF5EB;
+    color: var(--warm-orange);
+    border-color: var(--warm-orange);
+    font-weight: 600;
+  }
+
+  .mistake-list {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+  }
+  .mistake-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--bg-gray);
+    gap: 14px;
+  }
+  .mistake-item:last-child { border-bottom: none; }
+
+  .mistake-check {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--text-light);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    color: white;
+  }
+  .mistake-check.checked {
+    background: var(--mint-green);
+    border-color: var(--mint-green);
+  }
+
+  .mistake-info { flex: 1; min-width: 0; }
+  .mistake-q {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .mistake-q span { color: var(--warm-orange); }
+  .mistake-meta {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 3px;
+  }
+
+  .mistake-actions { display: flex; gap: 8px; }
+  .mistake-action-btn {
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-redo {
+    background: var(--gradient-success);
+    color: white;
+  }
+  .btn-delete {
+    background: #FFE8E8;
+    color: var(--wrong);
+  }
+
+  .mistake-empty { text-align: center; padding: 50px 20px; }
+  .mistake-empty-icon { font-size: 56px; margin-bottom: 12px; }
+  .mistake-empty-text {
+    font-size: 17px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .mistake-bottom-bar { display: flex; gap: 12px; margin-top: 16px; }
+  .batch-btn {
+    flex: 1;
+    padding: 16px;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+  .batch-redo {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-button);
+  }
+  .batch-delete {
+    background: var(--bg-card);
+    color: var(--wrong);
+    border: 2px solid #FFE8E8;
+  }
+
+  /* ========== Profile Page ========== */
+  .profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0 20px;
+  }
+  .avatar {
+    width: 90px;
+    height: 90px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-button);
+  }
+  .nickname {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .streak-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #FFF5EB;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    color: var(--warm-orange);
+    margin-top: 8px;
+    font-weight: 600;
+  }
+
+  .profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .profile-stat {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 20px 12px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+  }
+  .profile-stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--warm-orange);
+    line-height: 1.2;
+  }
+  .profile-stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+  .profile-stat.correct .profile-stat-value { color: var(--mint-green); }
+  .profile-stat.mistake .profile-stat-value { color: var(--wrong); }
+
+  .profile-menu {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+  }
+  .menu-item {
+    display: flex;
+    align-items: center;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--bg-gray);
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-item:active { background: #FAFAF8; }
+  .menu-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-right: 14px;
+  }
+  .menu-icon.pink { background: #FFE8EC; }
+  .menu-icon.blue { background: #E3F2FD; }
+  .menu-icon.green { background: #E8F7EF; }
+  .menu-icon.orange { background: #FFF0E0; }
+  .menu-icon.purple { background: #F3E8FF; }
+  .menu-text { flex: 1; font-size: 16px; color: var(--text-primary); }
+  .menu-arrow { font-size: 18px; color: var(--text-light); }
+  .menu-badge {
+    background: var(--warm-orange);
+    color: white;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+
+  /* ========== Toast & Modal ========== */
+  .toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(61, 53, 48, 0.92);
+    color: white;
+    padding: 14px 28px;
+    border-radius: var(--radius-lg);
+    font-size: 16px;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(61, 53, 48, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.active { display: flex; animation: fadeIn 0.2s ease; }
+  .modal {
+    background: var(--bg-card);
+    border-radius: var(--radius-2xl);
+    padding: 28px 24px;
+    width: 80%;
+    max-width: 360px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal-icon { font-size: 48px; margin-bottom: 12px; }
+  .modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .modal-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+  .modal-actions { display: flex; gap: 12px; }
+  .modal-btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .modal-btn.cancel {
+    background: var(--bg-gray);
+    color: var(--text-secondary);
+  }
+  .modal-btn.confirm {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-button);
+  }
+  .modal-btn:active { transform: scale(0.97); }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="status-bar">
+    <span id="currentTime">9:41</span>
+    <div class="icons">
+      <span>📶</span><span>📡</span><span class="battery"></span>
+    </div>
+  </div>
+  <div class="page-container" id="pageContainer"></div>
+  <div class="tab-bar" id="tabBar"></div>
+</div>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-icon" id="modalIcon">❓</div>
+    <div class="modal-title" id="modalTitle">确认操作</div>
+    <div class="modal-desc" id="modalDesc">确定要执行此操作吗？</div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">取消</button>
+      <button class="modal-btn confirm" onclick="confirmModal()">确定</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  const SK = { M: 'math_mistakes', S: 'math_stats' };
+  let state = { cat: '10', count: 5, type: 'mixed', questions: [], idx: 0, timer: null, customSubmit: null };
+  
+  function load(k){ try{ return JSON.parse(localStorage.getItem(k)) }catch(e){ return null } }
+  function save(k,v){ localStorage.setItem(k, JSON.stringify(v)) }
+  
+  function getStats(){
+    let s = load(SK.S);
+    if(!s) s = { total:0, correct:0, today:'', todayCount:0, streak:0, lastDate:'' };
+    return s;
+  }
+  function setStats(s){ save(SK.S, s) }
+  function getMistakes(){ return load(SK.M) || [] }
+  function setMistakes(m){ save(SK.M, m) }
+  
+  function today(){ return new Date().toDateString() }
+  
+  function updateClock(){
+    const d = new Date();
+    document.getElementById('currentTime').textContent = `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+  }
+  setInterval(updateClock, 60000);
+  
+  function showToast(msg){
+    const t = document.createElement('div');
+    t.className = 'toast'; t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(), 1500);
+  }
+  
+  let modalCb = null;
+  function showModal({icon,title,desc,btn,cb}){
+    document.getElementById('modalIcon').textContent = icon;
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalDesc').textContent = desc;
+    document.querySelector('#modalOverlay .modal-btn.confirm').textContent = btn || '确定';
+    modalCb = cb;
+    document.getElementById('modalOverlay').classList.add('active');
+  }
+  function closeModal(){ document.getElementById('modalOverlay').classList.remove('active'); modalCb=null }
+  function confirmModal(){ if(modalCb){ modalCb() } else { closeModal() } }
+  
+  const P = document.getElementById('pageContainer');
+  const TB = document.getElementById('tabBar');
+  
+  const tabs = [
+    {id:'home', icon:'🏠', label:'首页'},
+    {id:'mistake', icon:'📖', label:'错题集'},
+    {id:'profile', icon:'👥', label:'我的'}
+  ];
+  
+  function renderTabs(){
+    TB.innerHTML = tabs.map(t => `
+      <div class="tab-item active" data-tab="${t.id}" onclick="goTab('${t.id}')">
+        <div class="tab-icon-wrap"><div class="tab-icon">${t.icon}</div></div>
+        <div class="tab-label">${t.label}</div>
+      </div>
+    `).join('');
+  }
+  
+  function setActiveTab(id){
+    TB.querySelectorAll('.tab-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.tab === id);
+    });
+  }
+  
+  function goTab(id){
+    setActiveTab(id);
+    renderPage(id);
+  }
+  
+  function showPage(html, showTab){
+    P.innerHTML = `<div class="page active">${html}</div>`;
+    TB.style.display = showTab ? 'flex' : 'none';
+  }
+  
+  function renderPage(id){
+    if(id === 'home') renderHome();
+    else if(id === 'mistake') renderMistake();
+    else if(id === 'profile') renderProfile();
+  }
+  
+  window.goTab = goTab;
+  window.goToSettings = goToSettings;
+  window.selectCount = selectCount;
+  window.selectType = selectType;
+  window.startQuiz = startQuiz;
+  window.prevQuestion = prevQuestion;
+  window.nextQuestion = nextQuestion;
+  window.confirmExit = confirmExit;
+  window.filterMistakes = filterMistakes;
+  window.toggleMistake = toggleMistake;
+  window.redoMistake = redoMistake;
+  window.redoAllMistakes = redoAllMistakes;
+  window.deleteMistake = deleteMistake;
+  window.deleteSelectedMistakes = deleteSelectedMistakes;
+  window.resetStats = resetStats;
+  window.closeModal = closeModal;
+  window.confirmModal = confirmModal;
+  window.doSubmit = doSubmit;
+  
+  // ========== HOME ==========
+  function renderHome(){
+    const s = getStats();
+    const m = getMistakes();
+    const total = s.total || 0;
+    const rate = total > 0 ? Math.round((s.correct/total)*100) : 0;
+    
+    showPage(`
+      <div class="home-header">
+        <div class="home-title">💕 陈欣妍学数学 💕</div>
+        <div class="home-subtitle">一起来学数学吧！</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-value">${s.todayCount||0}</div><div class="stat-label">今日做题</div></div>
+        <div class="stat-card correct"><div class="stat-value">${rate}%</div><div class="stat-label">正确率</div></div>
+        <div class="stat-card mistake"><div class="stat-value">${m.length}</div><div class="stat-label">错题本</div></div>
+      </div>
+      <div class="section-title">选择练习</div>
+      <div class="category-cards">
+        <div class="category-card ten" onclick="goToSettings('10')">
+          <div class="category-icon">🔢</div>
+          <div class="category-title">10以内</div>
+          <div class="category-desc">加减法练习</div>
+          <div class="category-arrow">→</div>
+        </div>
+        <div class="category-card twenty" onclick="goToSettings('20')">
+          <div class="category-icon">🎯</div>
+          <div class="category-title">20以内</div>
+          <div class="category-desc">加减法练习</div>
+          <div class="category-arrow">→</div>
+        </div>
+      </div>
+      <div class="home-tips">
+        <div class="tips-icon">💡</div>
+        <div class="tips-text">
+          <div class="tips-title">小提示</div>
+          <div class="tips-desc">每天练习10分钟，数学越来越好！</div>
+        </div>
+      </div>
+    `, true);
+    setActiveTab('home');
+  }
+  
+  // ========== SETTINGS ==========
+  function goToSettings(cat){
+    state.cat = cat;
+    showPage(`
+      <div class="settings-header">
+        <button class="back-btn" onclick="goTab('home')">←</button>
+        <div class="page-title">${cat}以内加减法</div>
+      </div>
+      <div class="settings-content">
+        <div class="setting-group">
+          <div class="setting-group-title">选择题量</div>
+          <div class="option-list">
+            <div class="option-item active" data-n="5" onclick="selectCount(this)">5题</div>
+            <div class="option-item" data-n="10" onclick="selectCount(this)">10题</div>
+            <div class="option-item" data-n="15" onclick="selectCount(this)">15题</div>
+            <div class="option-item" data-n="20" onclick="selectCount(this)">20题</div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="setting-group-title">选择题型</div>
+          <div class="option-list">
+            <div class="option-item active" data-t="mixed" onclick="selectType(this)">混合</div>
+            <div class="option-item" data-t="add" onclick="selectType(this)">加法</div>
+            <div class="option-item" data-t="sub" onclick="selectType(this)">减法</div>
+          </div>
+        </div>
+        <button class="start-btn" onclick="startQuiz()">开始练习 🚀</button>
+      </div>
+    `, false);
+  }
+  
+  function selectCount(el){
+    el.parentNode.querySelectorAll('.option-item').forEach(o=>o.classList.remove('active'));
+    el.classList.add('active');
+    state.count = parseInt(el.dataset.n);
+  }
+  function selectType(el){
+    el.parentNode.querySelectorAll('.option-item').forEach(o=>o.classList.remove('active'));
+    el.classList.add('active');
+    state.type = el.dataset.t;
+  }
+  
+  // ========== QUIZ ==========
+  function genQuestions(){
+    const qs = [];
+    const max = parseInt(state.cat);
+    for(let i=0;i<state.count;i++){
+      let t = state.type === 'mixed' ? (Math.random()>0.5?'add':'sub') : state.type;
+      let o1,o2,ans;
+      if(t==='add'){
+        o1=Math.floor(Math.random()*(max+1));
+        o2=Math.floor(Math.random()*(max+1));
+        ans=o1+o2;
+      } else {
+        o1=Math.floor(Math.random()*(max+1));
+        o2=Math.floor(Math.random()*(o1+1));
+        ans=o1-o2;
+      }
+      qs.push({
+        id: 'q_'+Date.now()+'_'+i,
+        cat: state.cat,
+        type: t==='add'?'加法':'减法',
+        o1, o2, op: t==='add'?'+':'-',
+        ans, userAns: '', correct: null
+      });
+    }
+    return qs;
+  }
+  
+  function startQuiz(){
+    state.questions = genQuestions();
+    state.idx = 0;
+    state.customSubmit = null;
+    state.startTime = Date.now();
+    if(state.timer) clearInterval(state.timer);
+    state.timer = setInterval(()=>{
+      const s = Math.floor((Date.now()-state.startTime)/1000);
+      const el = document.getElementById('quizTimer');
+      if(el){
+        el.textContent = `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+      }
+    }, 1000);
+    renderQuiz();
+  }
+  
+  function renderQuiz(){
+    const q = state.questions[state.idx];
+    const total = state.questions.length;
+    const cur = state.idx + 1;
+    const prog = (cur/total)*100;
+    const isLast = cur === total;
+    
+    showPage(`
+      <div class="quiz-header">
+        <button class="back-btn" onclick="confirmExit()">←</button>
+        <div class="quiz-progress">${cur} / ${total}</div>
+        <div class="quiz-timer">⏱ <span id="quizTimer">00:00</span></div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${prog}%"></div></div>
+      <div class="question-card">
+        <div class="question-text">${q.o1} ${q.op} ${q.o2} = ?</div>
+        <input type="number" class="question-answer-input" id="ansInput" placeholder="?" value="${q.userAns||''}">
+      </div>
+      <div class="quiz-nav">
+        <button class="nav-btn prev" ${state.idx===0?'disabled':''} onclick="prevQuestion()">上一题</button>
+        ${isLast 
+          ? `<button class="nav-btn submit" onclick="doSubmit()">提交</button>`
+          : `<button class="nav-btn next" onclick="nextQuestion()">下一题</button>`
+        }
+      </div>
+    `, false);
+    
+    setTimeout(()=>{
+      const inp = document.getElementById('ansInput');
+      if(inp){
+        inp.focus();
+        inp.addEventListener('input', saveAnswer);
+      }
+    }, 100);
+  }
+  
+  function saveAnswer(e){
+    state.questions[state.idx].userAns = e.target.value;
+  }
+  
+  function prevQuestion(){
+    if(state.idx>0){ state.idx--; renderQuiz(); }
+  }
+  function nextQuestion(){
+    const inp = document.getElementById('ansInput');
+    if(inp) state.questions[state.idx].userAns = inp.value;
+    if(state.idx<state.questions.length-1){ state.idx++; renderQuiz(); }
+  }
+  
+  function doSubmit(){
+    const inp = document.getElementById('ansInput');
+    if(inp) state.questions[state.idx].userAns = inp.value;
+    
+    const unanswered = state.questions.filter(q => q.userAns === '');
+    if(unanswered.length > 0){
+      showToast(`还有 ${unanswered.length} 题未作答`);
+      return;
+    }
+    
+    if(state.customSubmit){
+      state.customSubmit();
+      return;
+    }
+    
+    gradeQuiz();
+  }
+  
+  function gradeQuiz(){
+    if(state.timer){ clearInterval(state.timer); state.timer = null; }
+    
+    let correctCount = 0;
+    const newMistakes = [];
+    
+    state.questions.forEach(q => {
+      const ua = parseInt(q.userAns);
+      q.correct = ua === q.ans;
+      if(q.correct) correctCount++;
+      else newMistakes.push({...q, wrongAns: ua, ts: Date.now()});
+    });
+    
+    if(newMistakes.length > 0){
+      const existing = getMistakes();
+      const existingKeys = new Set(existing.map(m=>`${m.o1}${m.op}${m.o2}`));
+      const toAdd = newMistakes.filter(m=>!existingKeys.has(`${m.o1}${m.op}${m.o2}`));
+      setMistakes([...existing, ...toAdd]);
+    }
+    
+    const st = getStats();
+    st.total += state.questions.length;
+    st.correct += correctCount;
+    const t = today();
+    if(st.today === t){
+      st.todayCount += state.questions.length;
+    } else {
+      st.today = t;
+      st.todayCount = state.questions.length;
+      if(st.lastDate === new Date(Date.now()-86400000).toDateString()){
+        st.streak++;
+      } else {
+        st.streak = 1;
+      }
+    }
+    st.lastDate = t;
+    setStats(st);
+    
+    showResult(correctCount, newMistakes);
+  }
+  
+  function confirmExit(){
+    showModal({
+      icon:'❓', title:'确认退出', desc:'退出后当前答题进度将不会保存',
+      btn:'退出', cb:()=>{
+        closeModal();
+        if(state.timer){ clearInterval(state.timer); state.timer=null; }
+        state.customSubmit = null;
+        goTab('home');
+      }
+    });
+  }
+  
+  // ========== RESULT ==========
+  function showResult(correctCount, wrongList){
+    const total = state.questions.length;
+    const wrongCount = total - correctCount;
+    const rate = Math.round((correctCount/total)*100);
+    
+    let emoji, title, desc;
+    if(rate===100){ emoji='🏆'; title='完美！'; desc='全部答对，太厉害了！'; }
+    else if(rate>=80){ emoji='🎉'; title='太棒了！'; desc='继续加油！'; }
+    else if(rate>=60){ emoji='😊'; title='不错哦！'; desc='再接再厉！'; }
+    else { emoji='💪'; title='继续努力！'; desc='多多练习就能进步！'; }
+    
+    let wrongHtml = '';
+    if(wrongList.length===0){
+      wrongHtml = '<div style="text-align:center;padding:30px;color:#BCB4AB">全部正确，太棒了！</div>';
+    } else {
+      wrongHtml = wrongList.map(q=>`
+        <div class="wrong-item">
+          <div class="wrong-question">${q.o1} ${q.op} ${q.o2} = ?</div>
+          <div class="wrong-your-answer">你的答案: ${q.wrongAns??'未答'}</div>
+          <div class="wrong-answer">✓ ${q.ans}</div>
+        </div>
+      `).join('');
+    }
+    
+    showPage(`
+      <div class="result-container">
+        <div class="result-header">
+          <div class="result-emoji">${emoji}</div>
+          <div class="result-title">${title}</div>
+          <div class="result-subtitle">${desc}</div>
+        </div>
+        <div class="result-stats">
+          <div class="result-stat correct"><div class="result-stat-num">${correctCount}</div><div class="result-stat-label">答对</div></div>
+          <div class="result-stat wrong"><div class="result-stat-num">${wrongCount}</div><div class="result-stat-label">答错</div></div>
+          <div class="result-stat rate"><div class="result-stat-num">${rate}%</div><div class="result-stat-label">正确率</div></div>
+        </div>
+        <div class="wrong-list-title">📝 错题详情</div>
+        <div class="wrong-list">${wrongHtml}</div>
+        <div class="result-actions">
+          <button class="nav-btn prev" onclick="goTab('mistake')">查看错题集</button>
+          <button class="nav-btn submit" onclick="goTab('home')">返回首页</button>
+        </div>
+      </div>
+    `, false);
+  }
+  
+  // ========== MISTAKE ==========
+  let currentFilter = 'all';
+  let selectedIds = new Set();
+  
+  function filterMistakes(cat){
+    currentFilter = cat;
+    selectedIds.clear();
+    renderMistake();
+  }
+  
+  function renderMistake(){
+    const all = getMistakes();
+    const list = currentFilter==='all' ? all : all.filter(m=>m.cat===currentFilter);
+    
+    let html = `
+      <div class="quiz-header"><div class="page-title">📚 错题集</div></div>
+      <div class="mistake-tabs">
+        <div class="mistake-tab ${currentFilter==='all'?'active':''}" onclick="filterMistakes('all')">全部</div>
+        <div class="mistake-tab ${currentFilter==='10'?'active':''}" onclick="filterMistakes('10')">10以内</div>
+        <div class="mistake-tab ${currentFilter==='20'?'active':''}" onclick="filterMistakes('20')">20以内</div>
+      </div>
+    `;
+    
+    if(list.length===0){
+      html += `<div class="mistake-empty">
+        <div class="mistake-empty-icon">📭</div>
+        <div class="mistake-empty-text">暂无错题</div>
+        <div style="font-size:13px;color:#BCB4AB">去做题吧，加油！</div>
+      </div>`;
+    } else {
+      html += `<div class="mistake-list">` + list.map(m=>`
+        <div class="mistake-item">
+          <div class="mistake-check ${selectedIds.has(m.id)?'checked':''}" onclick="toggleMistake('${m.id}')">${selectedIds.has(m.id)?'✓':''}</div>
+          <div class="mistake-info">
+            <div class="mistake-q">${m.o1} ${m.op} ${m.o2} = <span>${m.ans}</span></div>
+            <div class="mistake-meta">${m.cat}以内 · ${m.type} · 上次错误: ${m.wrongAns??'未答'}</div>
+          </div>
+          <div class="mistake-actions">
+            <button class="mistake-action-btn btn-redo" onclick="redoMistake('${m.id}')">重做</button>
+            <button class="mistake-action-btn btn-delete" onclick="deleteMistake('${m.id}')">删除</button>
+          </div>
+        </div>
+      `).join('') + `</div>
+      <div class="mistake-bottom-bar">
+        <button class="batch-btn batch-redo" onclick="redoAllMistakes()">🔄 重做全部</button>
+        <button class="batch-btn batch-delete" onclick="deleteSelectedMistakes()">🗑 删除选中</button>
+      </div>`;
+    }
+    
+    showPage(html, true);
+    setActiveTab('mistake');
+  }
+  
+  function toggleMistake(id){
+    if(selectedIds.has(id)) selectedIds.delete(id);
+    else selectedIds.add(id);
+    renderMistake();
+  }
+  
+  function redoMistake(id){
+    const all = getMistakes();
+    const m = all.find(x=>x.id===id);
+    if(!m) return;
+    
+    state.questions = [{
+      id: m.id+'_r', cat: m.cat, type: m.type,
+      o1: m.o1, o2: m.o2, op: m.op, ans: m.ans,
+      userAns: '', correct: null, origId: m.id
+    }];
+    state.idx = 0;
+    state.startTime = Date.now();
+    if(state.timer) clearInterval(state.timer);
+    state.timer = setInterval(()=>{
+      const s = Math.floor((Date.now()-state.startTime)/1000);
+      const el = document.getElementById('quizTimer');
+      if(el) el.textContent = `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+    }, 1000);
+    
+    state.customSubmit = ()=>{
+      const inp = document.getElementById('ansInput');
+      const ua = parseInt(inp? inp.value : '');
+      state.questions[0].userAns = ua;
+      state.questions[0].correct = ua === state.questions[0].ans;
+      
+      if(state.questions[0].correct){
+        setMistakes(getMistakes().filter(x=>x.id!==id));
+        showToast('✅ 答对了！已移除');
+      } else {
+        showToast('❌ 还是错了');
+      }
+      
+      const st = getStats();
+      st.total++;
+      if(state.questions[0].correct) st.correct++;
+      const t = today();
+      if(st.today===t) st.todayCount++;
+      else { st.today=t; st.todayCount=1; }
+      st.lastDate=t;
+      setStats(st);
+      
+      if(state.timer){ clearInterval(state.timer); state.timer=null; }
+      state.customSubmit = null;
+      setTimeout(()=>goTab('mistake'), 800);
+    };
+    
+    renderQuiz();
+  }
+  
+  function redoAllMistakes(){
+    const all = getMistakes();
+    if(all.length===0){ showToast('没有错题'); return; }
+    
+    state.questions = all.map(m=>({
+      id: m.id+'_r', cat: m.cat, type: m.type,
+      o1: m.o1, o2: m.o2, op: m.op, ans: m.ans,
+      userAns: '', correct: null, origId: m.id
+    }));
+    state.idx = 0;
+    state.startTime = Date.now();
+    if(state.timer) clearInterval(state.timer);
+    state.timer = setInterval(()=>{
+      const s = Math.floor((Date.now()-state.startTime)/1000);
+      const el = document.getElementById('quizTimer');
+      if(el) el.textContent = `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+    }, 1000);
+    
+    state.customSubmit = ()=>{
+      const inp = document.getElementById('ansInput');
+      const ua = parseInt(inp? inp.value : '');
+      state.questions[state.idx].userAns = ua;
+      state.questions[state.idx].correct = ua === state.questions[state.idx].ans;
+      
+      if(state.idx < state.questions.length-1){
+        state.idx++;
+        renderQuiz();
+        return;
+      }
+      
+      let cc = 0;
+      const toRemove = [];
+      state.questions.forEach(q=>{
+        if(q.correct){ cc++; toRemove.push(q.origId); }
+      });
+      
+      if(toRemove.length>0){
+        setMistakes(getMistakes().filter(x=>!toRemove.includes(x.origId)));
+      }
+      
+      const st = getStats();
+      st.total += state.questions.length;
+      st.correct += cc;
+      const t = today();
+      if(st.today===t){ st.todayCount += state.questions.length; }
+      else { st.today=t; st.todayCount=state.questions.length; }
+      st.lastDate=t;
+      setStats(st);
+      
+      if(state.timer){ clearInterval(state.timer); state.timer=null; }
+      state.customSubmit = null;
+      showResult(cc, state.questions.filter(q=>!q.correct));
+    };
+    
+    renderQuiz();
+  }
+  
+  function deleteMistake(id){
+    showModal({
+      icon:'🗑', title:'确认删除', desc:'确定要删除这道错题吗？',
+      btn:'删除', cb:()=>{
+        setMistakes(getMistakes().filter(x=>x.id!==id));
+        closeModal();
+        showToast('已删除');
+        renderMistake();
+      }
+    });
+  }
+  
+  function deleteSelectedMistakes(){
+    if(selectedIds.size===0){ showToast('请先选择错题'); return; }
+    showModal({
+      icon:'🗑', title:'确认删除', desc:`确定删除选中的 ${selectedIds.size} 道错题吗？`,
+      btn:'删除', cb:()=>{
+        setMistakes(getMistakes().filter(x=>!selectedIds.has(x.id)));
+        selectedIds.clear();
+        closeModal();
+        showToast('已删除');
+        renderMistake();
+      }
+    });
+  }
+  
+  // ========== PROFILE ==========
+  function renderProfile(){
+    const s = getStats();
+    const m = getMistakes();
+    const total = s.total || 0;
+    const rate = total > 0 ? Math.round((s.correct/total)*100) : 0;
+    
+    showPage(`
+      <div class="profile-header">
+        <div class="avatar">👧</div>
+        <div class="nickname">晓野小朋友</div>
+        <div class="streak-badge">🔥 连续打卡 ${s.streak||0} 天</div>
+      </div>
+      <div class="profile-stats">
+        <div class="profile-stat"><div class="profile-stat-value">${s.total||0}</div><div class="profile-stat-label">总做题数</div></div>
+        <div class="profile-stat correct"><div class="profile-stat-value">${rate}%</div><div class="profile-stat-label">正确率</div></div>
+        <div class="profile-stat mistake"><div class="profile-stat-value">${m.length}</div><div class="profile-stat-label">错题数</div></div>
+      </div>
+      <div class="profile-menu">
+        <div class="menu-item" onclick="goTab('mistake')">
+          <div class="menu-icon pink">📚</div>
+          <div class="menu-text">错题集</div>
+          <div class="menu-badge">${m.length}</div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="resetStats()">
+          <div class="menu-icon orange">🔄</div>
+          <div class="menu-text">重置学习数据</div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="showToast('开发中...')">
+          <div class="menu-icon blue">🔊</div>
+          <div class="menu-text">音效开关</div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="showToast('敬请期待！')">
+          <div class="menu-icon purple">🎨</div>
+          <div class="menu-text">主题设置</div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="showToast('陈欣妍学数学 v1.0')">
+          <div class="menu-icon green">ℹ️</div>
+          <div class="menu-text">关于我们</div>
+          <div class="menu-arrow">›</div>
+        </div>
+      </div>
+    `, true);
+    setActiveTab('profile');
+  }
+  
+  function resetStats(){
+    showModal({
+      icon:'⚠️', title:'重置学习数据', desc:'将清空所有数据，此操作不可恢复！',
+      btn:'重置', cb:()=>{
+        localStorage.removeItem(SK.M);
+        localStorage.removeItem(SK.S);
+        closeModal();
+        showToast('已重置');
+        renderProfile();
+      }
+    });
+  }
+  
+  // ========== INIT ==========
+  renderTabs();
+  renderHome();
+  updateClock();
+  
+})();
+</script>
+</body>
+</html>
